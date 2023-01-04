@@ -4,6 +4,7 @@ class CannonBall {
         this.x = x
         this.y = y
         this.r = 30
+        this.trajetory = []
         this.image = loadImage("./assets/cannonball.png")
         
         var opitions = {
@@ -25,6 +26,16 @@ class CannonBall {
         rotate(angle)
         image(this.image,0,0,this.r,this.r)
         pop()
+
+        //array armazena duas informações de uuma vez
+        if (this.body.velocity.x > 0 && this.body.position.x > 200) {
+            var position = [this.body.position.x, this.body.position.y]
+            this.trajetory.push(position);
+        }
+        for (var i = 0; i < this.trajetory.length; i++) {
+            image(this.image,this.trajetory[i][0], this.trajetory[i][1], 5, 5)
+            
+        }
 
     }
     shoot(){
