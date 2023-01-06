@@ -13,9 +13,14 @@ var cannon;
 var angle;
 var balls = []
 var boats = [];
+var boatAnimation = [];
+var boatData
+var boatSprite
 
 function preload() {
   bgImg = loadImage("./assets/background.gif")
+  boatSprite = loadImage("./assets/boat/boat.png")
+  boatData = loadJSON("./assets/boat/boat.json")
 }
 
 function setup() {
@@ -34,6 +39,13 @@ function setup() {
   ground = Bodies.rectangle(0,height-1,width*2,1,{isStatic:true})
   World.add(world,ground)
   
+  //extrair animação do barco
+  var boatFrames = boatData.frames
+  for (let i = 0; i < boatFrames.length; i++) {
+    var pos = boatFrames[i].position
+    var img = boatSprite.get(pos.x, pos.y, pos.w, pos.h)
+    boatAnimation.push(img)
+  }
   
  
 }
@@ -49,6 +61,7 @@ function draw() {
   //cannon_ball.display();
   for (var i = 0; i < balls.length; i++) {
     showCannonBalls(balls[i], i)
+    collisionWithBoats(i);
     
   }
   cannon.display()
@@ -90,24 +103,43 @@ function showBoats() {
     if (boats.length < 4 && boats[boats.length - 1].body.position.x < width - 300) {
       var positions = [-130,-100,-120,-80,-20]
       var position = random(positions)
-      var boat = new Boats(width, height - 100, 200, 200, position)
+      var boat = new Boats(width, height - 100, 200, 200, position, boatAnimation)
       boats.push(boat)
       
     }
 
     for (var i = 0; i < boats.length; i++) {
-      Body.setVelocity(boats [i].body, {x: -0.9, y:0})
-  
+      Body.setVelocity(boats [i].body, {x: -0.9, y:0});
+
       boats [i].display()
+      boats[i].animate()
     }
     
   } else { 
-    var boat = new Boats(width, height - 100, 200, 200, -100)
+    var boat = new Boats(width, height - 100, 200, 200, -100, boatAnimation)
     boats.push(boat)
   }
-
-  
 }
+
+function collisionWithBoats(index) {
+  for (let i = 0; i < boats.length; i++) {
+    if (balls[index] !== undefined && boats[i] !== undefined) {
+      var collision = Matter.SAT.collides(balls[index].body, boats[i].body)
+
+      if (collision.collided) {
+        Matter.World.remove(world,balls[index].body)
+        balls.splice(index,1)
+        boats[i].removeBoats(i)
+        
+      }
+      
+    }
+    
+    
+  }
+    
+}
+
 
 
 
