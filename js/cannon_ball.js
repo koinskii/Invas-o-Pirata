@@ -5,7 +5,10 @@ class CannonBall {
         this.y = y
         this.r = 30
         this.trajetory = []
+        this.isSink = false
+        this.speed = 0.05
         this.image = loadImage("./assets/cannonball.png")
+        this.animation = [this.image]
         
         var opitions = {
             restitution: 0.8,
@@ -17,14 +20,33 @@ class CannonBall {
         this.body = Bodies.circle(this.x,this.y,this.r,opitions)
         World.add(world, this.body)
     }
+    animate(){
+        this.speed += 0.5
+
+
+    }
+    removeBalls(index){
+        this.animation = waterAnimation
+        this.speed = 0.05
+        this.r = 150
+        this.isSink = true;
+        Matter.Body.setVelocity(this.body,{x:0 , y:0})
+
+        setTimeout(() => {
+            World.remove(world,balls[index].body)
+            balls.splice(index,1)
+        }, 1000);
+    }
     display(){
         var pos = this.body.position
         var angle = this.body.angle
+        var index = floor(this.speed % this.animation.length)
+
         push()
         imageMode(CENTER)
         translate(pos.x,pos.y)
         rotate(angle)
-        image(this.image,0,0,this.r,this.r)
+        image(this.animation[index],0,0,this.r,this.r)
         pop()
 
         //array armazena duas informações de uuma vez
